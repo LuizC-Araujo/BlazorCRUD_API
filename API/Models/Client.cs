@@ -1,6 +1,8 @@
-﻿namespace API.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace API.Models
 {
-    [indexer("Email", IsUnique = true)]
+    [Index("Email", IsUnique = true)]
     public class Client
     {
         public int Id { get; set; }
