@@ -33,5 +33,32 @@ namespace API.Controllers
             return Ok(client);
         }
 
+        [HttpPost]
+        public IActionResult CreateClient(ClientDTO clientDTO)
+        {
+            var checkClientEmail = _context.Clients.FirstOrDefault(x => x.Email == clientDTO.Email);
+            if (checkClientEmail is not null)
+            {
+                ModelState.AddModelError("Email", "O Email já está em uso");
+                var validation = new ValidationProblemDetails(ModelState);
+                return BadRequest(validation);
+            }
+
+            var client = new Client
+            {
+                FirstName = clientDTO.FirstName,
+                LastName = clientDTO.LastName,
+                Email = clientDTO.Email,
+                PhoneNumber = clientDTO.Phone ?? "",
+                Address = clientDTO.Address ?? "",
+                Status = clientDTO.Status,
+                CreatedAt = DateTime.Now,
+            };
+
+            _context.Clients.Add(client);
+            _context.SaveChanges();
+
+            return Ok(client);
+        }
     }
 }
