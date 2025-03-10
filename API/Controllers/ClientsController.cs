@@ -73,7 +73,7 @@ namespace API.Controllers
             }
 
             var client = _context.Clients.Find(id);
-            if (client == null)
+            if (client is null)
                 return NotFound();
 
             client.FirstName = clientDTO.FirstName;
@@ -86,6 +86,19 @@ namespace API.Controllers
             _context.SaveChanges();
 
             return Ok(client);
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteClient(int id)
+        {
+            var client = _context.Clients.Find(id);
+            if(client is null)
+                return NotFound();
+
+            _context.Clients.Remove(client);
+            _context.SaveChanges();
+
+            return Ok();
         }
     }
 }
