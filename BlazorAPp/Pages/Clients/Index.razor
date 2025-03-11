@@ -4,7 +4,7 @@
 
 <h1 class="text-center mb-3">Lista de Clientes></h1>
 
-<a class="btn btn-primary mb-3" href="/Clients/Create">Novo Cliente</a>"
+<a class="btn btn-primary mb-3" href="/Clients/Create">Novo Cliente</a>
 
 @if (clients is null)
 {
@@ -29,14 +29,14 @@ else
             {
                 <tr>
                     <td>@client.Id</td>
-                    <td>@client.FirstName + " " + client.LastName</td>
+                    <td>@($"{client.FirstName} {client.LastName}")</td>
                     <td>@client.Email</td>
                     <td>@client.PhoneNumber</td>
                     <td>@client.Status</td>
                     <td>@client.CreatedAt.ToShortDateString()</td>
                     <td style="white-space:nowrap">
-                        <a class="btn btn-primary btn-sm" href="/Clients/Edit/@client.Id"></a>
-                        <a class="btn btn-danger btn-sm" href="/Clients/Delete/@client.Id"></a>
+                        <a class="btn btn-primary btn-sm" href="/Clients/Edit/@client.Id">Editar</a>
+                        <a class="btn btn-danger btn-sm" href="/Clients/Edit/@client.Id">Deletar</a>
                     </td>
                 </tr>
             }
@@ -44,13 +44,11 @@ else
     </table>
 }
 
+@inject HttpClient Http
 @code {
-    [Inject]
-    private HttpClient Http { get; set; }
-
     private List<Client>? clients;
 
     protected override async Task OnInitializedAsync() =>
-        clients = await Http.GetFromJsonAsync<List<Client>>("https//localhost:7013/API/Clients");
+        clients = await Http.GetFromJsonAsync<List<Client>>("https://localhost:7013/API/Clients");
 
 }
