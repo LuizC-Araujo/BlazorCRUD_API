@@ -1,0 +1,56 @@
+﻿@page "/Clients"
+@using BlazorApp.Models
+@using System.Net.Http.Json;
+
+<h1 class="text-center mb-3">Lista de Clientes></h1>
+
+<a class="btn btn-primary mb-3" href="/Clients/Create">Novo Cliente</a>"
+
+@if (clients is null)
+{
+    <p><em>Loading</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nome</th>
+                <th>E-mail</th>
+                <th>Telefone</th>
+                <th>Status</th>
+                <th>Criado em</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var client in clients)
+            {
+                <tr>
+                    <td>@client.Id</td>
+                    <td>@client.FirstName + " " + client.LastName</td>
+                    <td>@client.Email</td>
+                    <td>@client.PhoneNumber</td>
+                    <td>@client.Status</td>
+                    <td>@client.CreatedAt.ToShortDateString()</td>
+                    <td style="white-space:nowrap">
+                        <a class="btn btn-primary btn-sm" href="/Clients/Edit/@client.Id"></a>
+                        <a class="btn btn-danger btn-sm" href="/Clients/Delete/@client.Id"></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Inject]
+    private HttpClient Http { get; set; }
+
+    private List<Client>? clients;
+
+    protected override async Task OnInitializedAsync() =>
+        clients = await Http.GetFromJsonAsync<List<Client>>("https//localhost:7013/API/Clients");
+
+}
