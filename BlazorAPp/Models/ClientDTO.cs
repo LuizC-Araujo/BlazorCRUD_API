@@ -1,4 +1,4 @@
-﻿namespace BlazorAPp.Models
+﻿namespace BlazorApp.Models
 {
     public class ClientDTO
     {
