@@ -1,0 +1,136 @@
+﻿@page "/Clients/Edit/{Id:int}"
+@using BlazorApp.Models
+@using System.Text.Json.Nodes
+
+<div class="row">
+    <div class="col-lg-8">
+        <h1 class="mb-5">Editar Cliente</h1>
+
+        @if (client is null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <div class="row mb-3">
+                <label class="col-md-4 col-form-label">Id</label>
+                <div class="col-md-8">
+                    <input class="form-control-plaintext" value="@Id" readonly>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-md-4 col-form-label">Primeiro Nome</label>
+                <div class="col-md-8">
+                    <input class="form-control" @bind="ClientData.FirstName">
+                    <span class="text-danger">@Errors["FirstName"]?[0]</span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-md-4 col-form-label">Último Nome</label>
+                <div class="col-md-8">
+                    <input class="form-control" @bind="ClientData.LastName">
+                    <span class="text-danger">@Errors["LastName"]?[0]</span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-md-4 col-form-label">E-mail</label>
+                <div class="col-md-8">
+                    <input class="form-control" @bind="ClientData.Email">
+                    <span class="text-danger">@Errors["Email"]?[0]</span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-md-4 col-form-label">Telefone</label>
+                <div class="col-md-8">
+                    <input class="form-control" @bind="ClientData.Phone">
+                    <span class="text-danger">@Errors["Phone"]?[0]</span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-md-4 col-form-label">Endereço</label>
+                <div class="col-md-8">
+                    <input class="form-control" @bind="ClientData.Address">
+                    <span class="text-danger">@Errors["Address"]?[0]</span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-md-4 col-form-label">Status</label>
+                <div class="col-md-8">
+                    <select class="form-select" @bind="ClientData.Status">
+                        <option value="New">Novo</option>
+                        <option value="Permanent">Permanente</option>
+                        <option value="Lead">Líder</option>
+                        <option value="Occasional">Ocasional</option>
+                        <option value="Inactive">Inativo</option>
+                        <option value="Active">Ativo</option>
+                    </select>
+                    <span class="text-danger">@Errors["Status"]?[0]</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="offset-md-4 col-md-4 d-grid">
+                    <button class="btn btn-primary" @onclick="SaveClient">Salvar</button>
+                </div>
+                <div class="col-md-4 d-grid">
+                    <a class="btn btn-outline-primary" href="/Clients">Cancelar</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@inject HttpClient http;
+@inject NavigationManager navManager;
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    public Client? client = null;
+    public ClientDTO ClientData { get; set; } = new();
+    public JsonNode Errors { get; set; } = new JsonObject();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            client = await http.GetFromJsonAsync<Client>("https://localhost:7013/API/clients/" + Id);
+            ClientData.FirstName = client?.FirstName ?? "";
+            ClientData.LastName = client?.LastName ?? "";
+            ClientData.Email = client?.Email ?? "";
+            ClientData.Phone = client?.PhoneNumber ?? "";
+            ClientData.Address = client?.Address ?? "";
+            ClientData.Status = client?.Status ?? "";
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine("Excpetion : " + ex.Message);
+        }
+    }
+
+    protected async Task SaveClient()
+    {
+        var response = await http.PutAsJsonAsync("https://localhost:7013/API/clients/" + Id, ClientData);
+        if (response.IsSuccessStatusCode)
+            navManager.NavigateTo("/Clients");
+        else
+        {
+            var strRespose = await response.Content.ReadAsStringAsync();
+            try
+            {
+                var jsonResponse = JsonNode.Parse(strRespose);
+                Errors = jsonResponse?["errors"] ?? new JsonObject();
+            }
+            catch (Exception)
+            {
+                    
+            }
+        }
+    }
+    
+}
