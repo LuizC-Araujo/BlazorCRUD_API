@@ -1,0 +1,86 @@
+﻿@page "/Clients/Create"
+@using BlazorAPp.Models
+
+<div class="row">
+    <div class="col-lg-8">
+        <h1 class="mb-5">Novo Cliente</h1>
+
+        <div class="row mb-3">
+            <label class="col-md-4 col-form-label">Primeiro Nome</label>
+            <div class="col-md-8">
+                <input class="form-control" @bind="ClientData.FirstName">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-md-4 col-form-label">Último Nome</label>
+            <div class="col-md-8">
+                <input class="form-control" @bind="ClientData.LastName">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-md-4 col-form-label">E-mail</label>
+            <div class="col-md-8">
+                <input class="form-control" @bind="ClientData.Email">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-md-4 col-form-label">Telefone</label>
+            <div class="col-md-8">
+                <input class="form-control" @bind="ClientData.Phone">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-md-4 col-form-label">Endereço</label>
+            <div class="col-md-8">
+                <input class="form-control" @bind="ClientData.Address">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-md-4 col-form-label">Status</label>
+            <div class="col-md-8">
+                <select class="form-select" @bind="ClientData.Status">
+                    <option value="New">Novo</option>
+                    <option value="Permanent">Permanente</option>
+                    <option value="Lead">Líder</option>
+                    <option value="Occasional">Ocasional</option>
+                    <option value="Inactive">Inativo</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="offset-md-4 col-md-4 d-grid">
+                <button class="btn btn-primary" @onclick="SaveClient">Salvar</button> 
+            </div>
+            <div class="col-md-4 d-grid">
+                <a class="btn btn-outline-primary" href="/Clients">Cancelar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@inject HttpClient http
+@inject NavigationManager navManager
+@code {
+    public ClientDTO ClientData { get; set; } = new();
+
+    protected async Task SaveClient()
+    {
+        var response = await http.PostAsJsonAsync("https://localhost:7013/API/clients", ClientData);
+
+        if (response.IsSuccessStatusCode)
+            navManager.NavigateTo("/Clients");
+
+        else
+        {
+            var strResponse = await response.Content.ReadAsStringAsync();
+            Console.WriteLine("Json Response: \n" + strResponse);
+        }
+
+    }
+}
