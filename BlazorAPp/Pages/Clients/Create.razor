@@ -1,5 +1,6 @@
 ﻿@page "/Clients/Create"
 @using BlazorAPp.Models
+@using System.Text.Json.Nodes
 
 <div class="row">
     <div class="col-lg-8">
@@ -9,6 +10,7 @@
             <label class="col-md-4 col-form-label">Primeiro Nome</label>
             <div class="col-md-8">
                 <input class="form-control" @bind="ClientData.FirstName">
+                <span class="text-danger">@Errors["FirstName"]?[0]</span>
             </div>
         </div>
 
@@ -16,6 +18,7 @@
             <label class="col-md-4 col-form-label">Último Nome</label>
             <div class="col-md-8">
                 <input class="form-control" @bind="ClientData.LastName">
+                <span class="text-danger">@Errors["LastName"]?[0]</span>
             </div>
         </div>
 
@@ -23,6 +26,7 @@
             <label class="col-md-4 col-form-label">E-mail</label>
             <div class="col-md-8">
                 <input class="form-control" @bind="ClientData.Email">
+                <span class="text-danger">@Errors["Email"]?[0]</span>
             </div>
         </div>
 
@@ -30,6 +34,7 @@
             <label class="col-md-4 col-form-label">Telefone</label>
             <div class="col-md-8">
                 <input class="form-control" @bind="ClientData.Phone">
+                <span class="text-danger">@Errors["Phone"]?[0]</span>
             </div>
         </div>
 
@@ -37,6 +42,7 @@
             <label class="col-md-4 col-form-label">Endereço</label>
             <div class="col-md-8">
                 <input class="form-control" @bind="ClientData.Address">
+                <span class="text-danger">@Errors["Address"]?[0]</span>
             </div>
         </div>
 
@@ -50,6 +56,7 @@
                     <option value="Occasional">Ocasional</option>
                     <option value="Inactive">Inativo</option>
                 </select>
+                <span class="text-danger">@Errors["Status"]?[0]</span>
             </div>
         </div>
 
@@ -68,6 +75,7 @@
 @inject NavigationManager navManager
 @code {
     public ClientDTO ClientData { get; set; } = new();
+    public JsonNode Errors { get; set; } = new JsonObject();
 
     protected async Task SaveClient()
     {
@@ -80,6 +88,15 @@
         {
             var strResponse = await response.Content.ReadAsStringAsync();
             Console.WriteLine("Json Response: \n" + strResponse);
+
+            try
+            {
+                var jsonResponse = JsonNode.Parse(strResponse);
+                Errors = jsonResponse?["errors"] ?? new JsonObject();
+            }
+            catch(Exception ex)
+            {                
+            }
         }
 
     }

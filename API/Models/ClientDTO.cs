@@ -10,12 +10,15 @@ namespace API.Models
         [Required(ErrorMessage = "Último nome é obrigatório")]
         public string LastName { get; set; } = "";
 
-        [Required, EmailAddress]
+        [Required(ErrorMessage = "Email é obrigatório")] 
+        [EmailAddress]
         public string Email { get; set; } = "";
 
         [Phone]
         public  string? Phone { get; set; }
         public string? Address { get; set; }
+
+        [Required(ErrorMessage = "Status é obrigatório")]
         public string Status { get; set; } = ""; //New, permanent, occasional, inactive
     }
 
